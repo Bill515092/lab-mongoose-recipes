@@ -32,18 +32,18 @@ mongoose
       duration: 120,
       creator: "William",
     };
-    Recipe.create(newRecipe)
+    return Recipe.create(newRecipe)
       .then((firstRecipe) => {
         console.log(firstRecipe.title);
       })
       .then(() => {
-        Recipe.insertMany(data).then((eachRecipe) => {
+        return Recipe.insertMany(data).then((eachRecipe) => {
           console.log(eachRecipe);
         });
       })
       .then(() => {
-        Recipe.findByIdAndUpdate(
-          "644159186180317461043b34",
+        return Recipe.findOneAndUpdate(
+          { title: "Rigatoni alla Genovese" },
           { duration: 100 },
           { new: true }
         ).then(() => {
@@ -51,12 +51,14 @@ mongoose
         });
       })
       .then(() => {
-        Recipe.findByIdAndDelete("64416127427e4bd4617a2311").then(() => {
+        return Recipe.deleteOne({ title: "Carrot Cake" }).then(() => {
           console.log("Successful Deletion!");
-          // Run your code here, after you have insured that the connection was made
+          return mongoose.connection.close().then(() => {
+            console.log("Connection closed");
+          });
         });
+      })
+      .catch((error) => {
+        console.error("Error connecting to the database", error);
       });
-  })
-  .catch((error) => {
-    console.error("Error connecting to the database", error);
   });
